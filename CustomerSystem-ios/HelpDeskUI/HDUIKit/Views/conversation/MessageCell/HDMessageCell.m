@@ -348,12 +348,13 @@ NSString *const HDMessageCellIdentifierSendFile = @"HDMessageCellSendFile";
                     NSDictionary *dic = [model.message.ext objectForKey:@"msgtype"];
                      NSDictionary *itemDic = [dic objectForKey:@"order"] ? [dic objectForKey:@"order"] : [dic objectForKey:@"track"];
                     if ([dic objectForKey:@"track"]) { //轨迹消息
-                        NSString *imageName = [model.message.ext objectForKey:@"imageName"];
-                        if ([imageName length] > 0) {
-                            _bubbleView.cusImageView.image = [UIImage imageNamed:imageName];
+                        NSString *imageName = [model.message.ext valueForKey:@"imageName"];
+                        NSString *urlStr = [itemDic objectForKey:@"img_url"];
+                        if ([urlStr length] > 0) {
+                            [_bubbleView.cusImageView sd_setImageWithURL:[NSURL URLWithString:urlStr] placeholderImage:[UIImage imageNamed:imageName]];
                         }
                         else{
-                            _bubbleView.cusImageView.image = [UIImage imageNamed:@"imageDownloadFail.png"];
+                            _bubbleView.cusImageView.image = [UIImage imageNamed:imageName];
                         }
                         _bubbleView.trackTitleLabel.text = [itemDic objectForKey:@"title"];
                         _bubbleView.cusDescLabel.text = [itemDic objectForKey:@"desc"];

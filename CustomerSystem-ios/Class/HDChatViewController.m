@@ -125,7 +125,7 @@
 }
 
 - (void)dealloc{
-    [[HChatClient sharedClient].chat endPolling];
+//    [[HChatClient sharedClient].chat endPolling];
 }
 
 - (void)viewWillAppear:(BOOL)animated

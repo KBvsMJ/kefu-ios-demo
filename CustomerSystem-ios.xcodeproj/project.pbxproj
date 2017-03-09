@@ -2310,8 +2310,14 @@
 						DevelopmentTeam = 499WYUV8Q2;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 0;
+							};
 							com.apple.Push = {
 								enabled = 1;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 0;
 							};
 						};
 					};

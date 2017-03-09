@@ -83,7 +83,8 @@
         _scrollToBottomWhenAppear = YES;
         _messsagesSource = [NSMutableArray array];
         HError *er = [HError new];
-        [_conversation markAllMessagesAsRead:&er];
+        [_conversation markMessagesAsReadWithConversationId:conversationChatter error:&er];
+        NSLog(@"%d",[_conversation unreadMessagesCount]);
     }
     
     return self;
@@ -1242,6 +1243,10 @@
 #pragma mark - HChatDelegate
 
 - (void)messagesDidReceive:(NSArray *)aMessages {
+    if (aMessages.count > 0) {
+        HMessage *message = [aMessages firstObject];
+        [_conversation markMessagesAsReadWithConversationId:message.conversationId error:nil];
+    }
     for (HMessage *message in aMessages) {
         if ([self.conversation.conversationId isEqualToString:message.conversationId]) {
             [self addMessageToDataSource:message progress:nil];
