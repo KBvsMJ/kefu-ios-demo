@@ -84,7 +84,7 @@
         _messsagesSource = [NSMutableArray array];
         HError *er = [HError new];
         [_conversation markMessagesAsReadWithConversationId:conversationChatter error:&er];
-        NSLog(@"%d",[_conversation unreadMessagesCount]);
+        NSLog(@"unreadMessagesCount :%d",[_conversation unreadMessagesCount]);
     }
     
     return self;
@@ -101,8 +101,8 @@
     //Initialization
     CGFloat chatbarHeight = [HDChatToolbar defaultHeight];
     self.chatToolbar = [[HDChatToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - chatbarHeight, self.view.frame.size.width, chatbarHeight)];
-    self.chatToolbar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;    
-    
+    self.chatToolbar.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
+
     //Initializa the gesture recognizer
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(keyBoardHidden:)];
     tap.delegate = self;
@@ -113,7 +113,7 @@
     [self.tableView addGestureRecognizer:_lpgr];
     
     _messageQueue = dispatch_queue_create("hyphenate.com", NULL);
-    
+
     //Register the delegate
     [HDCDDeviceManager sharedInstance].delegate = self;
     
@@ -123,7 +123,7 @@
                                              selector:@selector(didBecomeActive)
                                                  name:UIApplicationDidBecomeActiveNotification
                                                object:nil];
-    
+
     [[HDBaseMessageCell appearance] setSendBubbleBackgroundImage:[[UIImage imageNamed:@"HelpDeskUIResource.bundle/chat_sender_bg"] stretchableImageWithLeftCapWidth:5 topCapHeight:35]];
     [[HDBaseMessageCell appearance] setRecvBubbleBackgroundImage:[[UIImage imageNamed:@"HelpDeskUIResource.bundle/chat_receiver_bg"] stretchableImageWithLeftCapWidth:35 topCapHeight:35]];
     
@@ -172,8 +172,7 @@
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[HChatClient sharedClient].chat removeDelegate:self];
+    NSLog(@"dealloc %s,",__func__);
     [[HDCDDeviceManager sharedInstance] stopPlaying];
     [HDCDDeviceManager sharedInstance].delegate = nil;
     
@@ -200,6 +199,8 @@
 {
     [super viewWillDisappear:animated];
     [[HDCDDeviceManager sharedInstance] disableProximitySensor];
+    [[HChatClient sharedClient].chat removeDelegate:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - getter
@@ -1385,11 +1386,31 @@
         
         //Construct message model
         id<HDIMessageModel> model = nil;
-        if (_dataSource && [_dataSource respondsToSelector:@selector(messageViewController:modelForMessage:)]) {
+        //接收的消息不能设置头像
+        BOOL isSender = message.direction == HMessageDirectionSend;
+        if (isSender && _dataSource && [_dataSource respondsToSelector:@selector(messageViewController:modelForMessage:)]) {
             model = [_dataSource messageViewController:self modelForMessage:message];
         }
         else{
             model = [[HDMessageModel alloc] initWithMessage:message];
+            NSDictionary *weichat = [NSDictionary dictionary];
+            if ([message.ext objectForKey:@"weichat"]) {
+                weichat = [message.ext valueForKey:@"weichat"];
+            }
+            NSDictionary *agent = [NSDictionary dictionary];
+            if ([weichat objectForKey:@"agent"]) {
+                agent = [weichat valueForKey:@"agent"];
+            }
+            if ([[agent allKeys] containsObject:@"avatar"]) {
+                NSString *url = [agent valueForKey:@"avatar"];
+                if (![url isKindOfClass:[NSNull class]]) {
+                    if ([url hasPrefix:@"http"]) {
+                        model.avatarURLPath = [agent valueForKey:@"avatar"];
+                    } else {
+                        model.avatarURLPath = [[@"https://kefu.easemob.com" stringByAppendingString:[agent valueForKey:@"avatar"]] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                    }
+                }
+            }
             model.avatarImage = [UIImage imageNamed:@"HelpDeskUIResource.bundle/user"];
             model.failImageName = @"imageDownloadFail";
         }

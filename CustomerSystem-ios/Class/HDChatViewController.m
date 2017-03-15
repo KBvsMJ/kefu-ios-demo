@@ -125,7 +125,14 @@
 }
 
 - (void)dealloc{
+    
+    NSLog(@"----dealloc---func%s",__func__);
 //    [[HChatClient sharedClient].chat endPolling];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated
