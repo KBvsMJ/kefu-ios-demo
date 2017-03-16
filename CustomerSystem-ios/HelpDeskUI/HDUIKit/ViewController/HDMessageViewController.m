@@ -172,7 +172,10 @@
 
 - (void)dealloc
 {
+<<<<<<< HEAD
     NSLog(@"dealloc %s,",__func__);
+=======
+>>>>>>> master
     [[HDCDDeviceManager sharedInstance] stopPlaying];
     [HDCDDeviceManager sharedInstance].delegate = nil;
     
@@ -199,8 +202,13 @@
 {
     [super viewWillDisappear:animated];
     [[HDCDDeviceManager sharedInstance] disableProximitySensor];
+<<<<<<< HEAD
     [[HChatClient sharedClient].chat removeDelegate:self];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+=======
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[HChatClient sharedClient].chat removeDelegate:self];
+>>>>>>> master
 }
 
 #pragma mark - getter
