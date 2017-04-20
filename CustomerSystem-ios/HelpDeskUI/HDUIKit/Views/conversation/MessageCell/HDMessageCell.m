@@ -348,7 +348,6 @@ NSString *const HDMessageCellIdentifierSendFile = @"HDMessageCellSendFile";
                     NSDictionary *dic = [model.message.ext objectForKey:@"msgtype"];
                      NSDictionary *itemDic = [dic objectForKey:@"order"] ? [dic objectForKey:@"order"] : [dic objectForKey:@"track"];
                     if ([dic objectForKey:@"track"]) { //轨迹消息
-<<<<<<< Updated upstream
                         NSString *imageName = [model.message.ext valueForKey:@"imageName"];
                         NSString *urlStr = [itemDic objectForKey:@"img_url"];
                         if ([urlStr length] > 0) {
